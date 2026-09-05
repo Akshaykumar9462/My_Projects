@@ -1,6 +1,7 @@
-
 from tkinter import *
 import random
+import json
+
 GAME_WIDTH=1100
 GAME_HEIGHT=550
 SPEED=150
@@ -10,17 +11,10 @@ BODY_PARTS=3
 SNAKE_COLOUR="#0400FF"
 FOOD_COLOUR="#F1E9E9"
 BACKGROUND_COLOUR="#000000"
-import json
+
 def save_scores(scores):
     with open("scores.json", "w") as f:
         json.dump(scores, f)
-def load_scores():
-    try:
-        with open("scores.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return [] 
-import json
 
 def load_scores():
     try:
@@ -29,9 +23,6 @@ def load_scores():
     except FileNotFoundError:
         return []
 
-def save_scores(scores):
-    with open("scores.json", "w") as f:
-        json.dump(scores, f)
 class Snake:
     def __init__(self):
         self.body_size=BODY_PARTS
@@ -107,15 +98,16 @@ def check_collision(snake):
     x,y=snake.coordinates[0]
     if x<0 or x>=GAME_WIDTH:
         print("Game Over")
-        return True    
+        return True
     elif y<0 or y>=GAME_HEIGHT:
         print("Game Over")
-        return True  
+        return True
     for body_part in snake.coordinates[1:]:
         if x==body_part[0] and y==body_part[1]:
             print("Game Over")
             return True
     return False
+
 def game_over():
     scores = load_scores()
     scores.append(score)
@@ -132,6 +124,7 @@ def game_over():
 
     restart_button = Button(window, text="Play Again", font=("Calibri", 20), command=restart_game)
     canvas.create_window(canvas.winfo_width()/2, canvas.winfo_height()/2 + 180, window=restart_button)
+
 def restart_game():
     global score, direction, current_speed, snake, food
     canvas.delete(ALL)
@@ -143,6 +136,7 @@ def restart_game():
     snake = Snake()
     food = Food()
     next_turn(snake, food)
+
 window=Tk()
 window.title("Snake game")
 window.resizable(False,False)
@@ -168,3 +162,4 @@ window.bind('<Down>',lambda event:change_direction('down'))
 snake=Snake()
 food=Food()
 next_turn(snake,food)
+window.mainloop()
