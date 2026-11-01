@@ -7,7 +7,7 @@ services:
     buildCommand: bash ./build.sh
     startCommand: bash -c 'python manage.py migrate --noinput && gunicorn study_organiser.wsgi:application --bind 0.0.0.0:${PORT} --workers 1 --timeout 90'
     healthCheckPath: /health/
-    autoDeploy: true
+    autoDeployTrigger: commit
     envVars:
       - key: DJANGO_DEBUG
         value: "false"
