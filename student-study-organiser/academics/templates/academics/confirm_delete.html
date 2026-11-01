@@ -1,0 +1,17 @@
+{% extends 'academics/base.html' %}
+
+{% block title %}Confirm deletion | Study Organiser{% endblock %}
+
+{% block content %}
+<main class="form-page">
+    <p class="eyebrow">PLEASE CONFIRM</p>
+    <h1>Delete this task?</h1>
+    <p class="intro-copy">This will permanently remove <strong>{{ task.title }}</strong>. Recorded study sessions will remain, but will no longer be linked to the task.</p>
+    <form method="post" class="form-actions delete-actions">
+        {% csrf_token %}
+        <button class="button danger-button" type="submit">Yes, delete task</button>
+        <a class="button secondary-button" href="{% url 'academics:dashboard' %}">Keep task</a>
+    </form>
+</main>
+{% endblock %}
+

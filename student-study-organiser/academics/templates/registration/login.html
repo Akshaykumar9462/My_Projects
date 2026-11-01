@@ -1,0 +1,29 @@
+{% extends 'academics/base.html' %}
+
+{% block title %}Sign in | Study Organiser{% endblock %}
+
+{% block content %}
+<main class="form-page">
+    <p class="eyebrow">STUDY ORGANISER</p>
+    <h1>Welcome back</h1>
+    <p class="intro-copy">Sign in to see your subjects, tasks, and study progress.</p>
+
+    <form method="post" class="data-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        {% for field in form %}
+        <div class="form-field{% if field.errors %} has-error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="form-actions">
+            <button class="button primary-button" type="submit">Sign in</button>
+            <a class="button secondary-button" href="{% url 'signup' %}">Create account</a>
+        </div>
+    </form>
+</main>
+{% endblock %}
+

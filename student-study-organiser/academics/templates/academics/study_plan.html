@@ -1,0 +1,83 @@
+{% extends 'academics/base.html' %}
+
+{% block title %}Study plan | Study Organiser{% endblock %}
+
+{% block content %}
+<main>
+    <section class="intro" aria-labelledby="page-title">
+        <div>
+            <p class="eyebrow">A SUGGESTED PLAN FOR {{ plan.today|date:"l, F j"|upper }}</p>
+            <h1 id="page-title">Make room for steady progress.</h1>
+            <p class="intro-copy">A clear, deadline-first suggestion using {{ plan.available_minutes }} available study minutes.</p>
+        </div>
+        <a class="button secondary-button" href="{% url 'academics:study-preferences' %}">Edit preferences</a>
+    </section>
+
+    <div class="notice-box">
+        This plan is only a suggestion. It does not change your tasks, calendar, or study log.
+        The planner uses due dates first, then priority, and splits estimated work into your preferred focus sessions.
+    </div>
+
+    <section class="plan-summary" aria-label="Plan summary">
+        <div><strong>{{ plan.planned_minutes }}</strong><span>study minutes planned</span></div>
+        <div><strong>{{ plan.focus_blocks|length }}</strong><span>focus sessions</span></div>
+        <div><strong>{{ plan.remaining_available_minutes }}</strong><span>available minutes left</span></div>
+    </section>
+
+    {% if plan.focus_blocks %}
+    <section class="plan-section" aria-labelledby="focus-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">START WITH THE NEAREST DEADLINE</p>
+                <h2 id="focus-title">Suggested focus sessions</h2>
+            </div>
+        </div>
+        <div class="plan-list">
+            {% for block in plan.focus_blocks %}
+            <article class="plan-block">
+                <span class="plan-number">{{ forloop.counter }}</span>
+                <div class="plan-block-main">
+                    <p class="eyebrow">{{ block.task.subject.name }} · {{ block.task.get_task_type_display }}{% if block.session_number > 1 %} · Session {{ block.session_number }}{% endif %}</p>
+                    <h3>{{ block.task.title }}</h3>
+                    <p>{% if block.task.due_date %}Due {{ block.task.due_date|date:"M j" }}{% else %}No due date set{% endif %} · {{ block.task.priority|title }} priority</p>
+                </div>
+                <div class="plan-duration"><strong>{{ block.duration_minutes }}</strong><span>min</span></div>
+            </article>
+            {% if not forloop.last and block.break_minutes %}
+            <p class="plan-break">Then take a {{ block.break_minutes }} minute break</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+    {% elif plan.pending_count == 0 %}
+    <div class="empty-state plan-empty">
+        <h2>No pending tasks to schedule</h2>
+        <p>Add an assignment, exam, or project and your next plan can use it.</p>
+        <a class="button primary-button" href="{% url 'academics:task-create' %}">Add a task</a>
+    </div>
+    {% else %}
+    <div class="empty-state plan-empty">
+        <h2>No focus time available</h2>
+        <p>Update your daily study availability in preferences when you are ready to make a plan.</p>
+        <a class="button secondary-button" href="{% url 'academics:study-preferences' %}">Edit preferences</a>
+    </div>
+    {% endif %}
+
+    {% if plan.unplanned_tasks %}
+    <section class="plan-section" aria-labelledby="later-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">WHEN YOU HAVE MORE TIME</p>
+                <h2 id="later-title">Still to plan</h2>
+            </div>
+        </div>
+        <ul class="unplanned-list">
+            {% for item in plan.unplanned_tasks %}
+            <li><strong>{{ item.task.title }}</strong> · {{ item.task.subject.name }}{% if item.estimated %} · about {{ item.remaining_minutes }} min remaining{% else %} · estimate not set{% endif %}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+</main>
+{% endblock %}
+

@@ -1,0 +1,142 @@
+{% extends 'academics/base.html' %}
+{% load static %}
+
+{% block title %}Study overview | Study Organiser{% endblock %}
+
+{% block content %}
+<main>
+    <section class="intro" aria-labelledby="page-title">
+        <div>
+            <p class="eyebrow">YOUR STUDY OVERVIEW</p>
+            <h1 id="page-title">A little progress adds up.</h1>
+            <p class="intro-copy">{{ today_label }} · Review your workload and choose a useful next step.</p>
+        </div>
+        <div class="section-actions">
+            <a class="button secondary-button" href="{% url 'academics:study-plan' %}">Build a study plan</a>
+            <a class="button primary-button" href="{% url 'academics:task-create' %}">Add a task</a>
+        </div>
+    </section>
+
+    <section class="summary-grid" aria-label="Study summary">
+        <article class="summary-card progress-card">
+            <div class="card-heading">
+                <span class="card-icon progress-icon" aria-hidden="true">↗</span>
+                <span class="card-label">Task progress</span>
+            </div>
+            <div class="progress-line">
+                <strong>{{ progress_percent }}%</strong>
+                <span>{{ completed_count }} of {{ total_count }} completed</span>
+            </div>
+            <div class="progress-track" role="progressbar"
+                 aria-label="Tasks completed"
+                 aria-valuemin="0" aria-valuemax="100"
+                 aria-valuenow="{{ progress_percent }}">
+                <span style="width: {{ progress_percent }}%"></span>
+            </div>
+        </article>
+
+        <article class="summary-card">
+            <div class="card-heading">
+                <span class="card-icon pending-icon" aria-hidden="true">◷</span>
+                <span class="card-label">Pending tasks</span>
+            </div>
+            <strong class="big-number">{{ pending_count }}</strong>
+            <span class="card-footnote">Across {{ subject_count }} subject{{ subject_count|pluralize }}</span>
+        </article>
+
+        <article class="summary-card">
+            <div class="card-heading">
+                <span class="card-icon tip-icon" aria-hidden="true">!</span>
+                <span class="card-label">Due in the next 7 days</span>
+            </div>
+            <strong class="big-number">{{ due_soon_count }}</strong>
+            <span class="card-footnote">{{ overdue_count }} overdue pending task{{ overdue_count|pluralize }}</span>
+        </article>
+
+        <article class="summary-card">
+            <div class="card-heading">
+                <span class="card-icon session-icon" aria-hidden="true">◴</span>
+                <span class="card-label">Study time this week</span>
+            </div>
+            <strong class="big-number">{{ study_minutes_this_week }}<small> min</small></strong>
+            <span class="card-footnote">{{ study_time_change_label }}</span>
+        </article>
+    </section>
+
+    <section class="insights-section" aria-labelledby="insights-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">BASED ON YOUR SAVED RECORDS</p>
+                <h2 id="insights-title">Suggested next steps</h2>
+            </div>
+                <span class="insight-badge">Transparent rules based on saved records</span>
+        </div>
+        <div class="insight-list">
+            {% for suggestion in suggestions %}
+            <article class="insight-item insight-{{ suggestion.tone }}">
+                <span class="insight-mark" aria-hidden="true">{% if suggestion.tone == 'attention' %}!{% elif suggestion.tone == 'positive' %}✓{% else %}→{% endif %}</span>
+                <div>
+                    <h3>{{ suggestion.title }}</h3>
+                    <p>{{ suggestion.message }}</p>
+                    <small>Why: {{ suggestion.reason }}</small>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="tasks-section" aria-labelledby="tasks-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">KEEP AN EYE ON</p>
+                <h2 id="tasks-title">Academic tasks</h2>
+            </div>
+            <div class="section-actions">
+                <a class="text-link" href="{% url 'academics:subjects' %}">Manage subjects</a>
+                <a class="button secondary-button" href="{% url 'academics:study-session-create' %}">Log study time</a>
+            </div>
+        </div>
+        <div class="reminder-controls">
+            <button class="button secondary-button" type="button" id="enable-deadline-notifications">Enable Windows notifications</button>
+            <span id="notification-status" role="status">Notifications can remind you about tasks due today or tomorrow while you use this app.</span>
+        </div>
+
+        {% if tasks %}
+        <div class="task-list">
+            {% for task in tasks %}
+            <article class="task-row" data-task-id="{{ task.id }}" data-task-title="{{ task.title }}" data-task-due="{{ task.due_date|date:'Y-m-d'|default:'' }}" data-task-status="{{ task.status }}">
+                <span class="task-dot {{ task.status_class }}" aria-hidden="true"></span>
+                <div class="task-main">
+                    <h3>{{ task.title }}</h3>
+                    <p>{{ task.get_task_type_display }} <span aria-hidden="true">·</span> {{ task.subject.name }} <span aria-hidden="true">·</span> {{ task.get_priority_display }} priority</p>
+                </div>
+                <span class="status-pill {{ task.status_class }}">{{ task.get_status_display }}</span>
+                <div class="due-date">
+                    <strong>{{ task.formatted_due_date }}</strong>
+                    <span>{{ task.due_label }}</span>
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'academics:task-update' task.id %}">Edit</a>
+                    <a href="{% url 'academics:task-delete' task.id %}">Delete</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No tasks yet</h3>
+            {% if subject_count %}
+            <p>Record an assignment, exam, or project. Your progress will update here.</p>
+            <a class="button primary-button" href="{% url 'academics:task-create' %}">Add a task</a>
+            {% else %}
+            <p>Add a subject, then record an assignment, exam, or project. Your progress will update here.</p>
+            <a class="button primary-button" href="{% url 'academics:subject-create' %}">Add a subject</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        <p class="demo-note">Your account data is stored in this local SQLite database. Cloud sync is not enabled yet.</p>
+    </section>
+</main>
+<script src="{% static 'academics/deadline_notifications.js' %}" defer></script>
+{% endblock %}
+

@@ -1,0 +1,77 @@
+{% extends 'academics/base.html' %}
+
+{% block title %}Study assistant | Study Organiser{% endblock %}
+
+{% block content %}
+<main class="assistant-page">
+    <p class="eyebrow">YOUR STUDY PARTNER</p>
+    <h1>Study assistant</h1>
+    <p class="intro-copy">Ask about your tasks or progress, or describe a task you want to add or update.</p>
+    <div class="notice-box privacy-note">
+        Your message and recent conversation are sent to OpenAI for a reply. Task changes are only saved after you approve a proposal below.
+    </div>
+
+    {% if pending_actions %}
+    <section class="pending-section" aria-labelledby="pending-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">YOUR DECISION</p>
+                <h2 id="pending-title">Task changes awaiting approval</h2>
+            </div>
+        </div>
+        {% for action in pending_actions %}
+        <article class="pending-card">
+            <div>
+                <span class="pending-type">{{ action.get_action_type_display }}</span>
+                {% if action.action_type == 'create_task' %}
+                <h3>{{ action.payload.title }}</h3>
+                <p>{{ action.payload.subject_name }} · {{ action.payload.task_type|title }} · {{ action.payload.priority|title }} priority</p>
+                <p>Due: {{ action.payload.due_date|default:"No due date" }}{% if action.payload.estimated_minutes %} · Estimate: {{ action.payload.estimated_minutes }} min{% endif %}</p>
+                {% else %}
+                <h3>Task #{{ action.payload.task_id }}</h3>
+                <p>Change <strong>{{ action.payload.field|cut:"_" }}</strong> to <strong>{{ action.payload.value|default:"No due date" }}</strong></p>
+                {% endif %}
+            </div>
+            <div class="pending-actions">
+                <form method="post" action="{% url 'academics:assistant-action-approve' action.pk %}">
+                    {% csrf_token %}
+                    <button class="button primary-button" type="submit">Approve change</button>
+                </form>
+                <form method="post" action="{% url 'academics:assistant-action-reject' action.pk %}">
+                    {% csrf_token %}
+                    <button class="button secondary-button" type="submit">Dismiss</button>
+                </form>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <section class="conversation-panel" aria-label="Conversation">
+        {% if chat_messages %}
+            {% for message in chat_messages %}
+            <article class="chat-message chat-{{ message.role }}">
+                <span class="chat-speaker">{% if message.role == 'user' %}You{% else %}Study assistant{% endif %}</span>
+                <p>{{ message.content|linebreaksbr }}</p>
+            </article>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state chat-empty">
+                <h2>Start with a study question</h2>
+                <p>Try “Which tasks are due soon?” or “Add a Biology assignment due next Friday.”</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <form method="post" class="chat-form">
+        {% csrf_token %}
+        <label for="assistant-message">Your message</label>
+        <textarea id="assistant-message" name="message" rows="3" maxlength="4000" placeholder="Ask a question or describe a task…" required></textarea>
+        <div class="chat-form-footer">
+            <small>Up to 4,000 characters. You approve any task change before it is saved.</small>
+            <button class="button primary-button" type="submit">Send message</button>
+        </div>
+    </form>
+</main>
+{% endblock %}
+

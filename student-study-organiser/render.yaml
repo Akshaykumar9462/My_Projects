@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: student-study-organiser
+    runtime: python
+    plan: free
+    rootDir: student-study-organiser
+    buildCommand: bash ./build.sh
+    startCommand: bash -c 'python manage.py migrate --noinput && gunicorn study_organiser.wsgi:application --bind 0.0.0.0:${PORT} --workers 1 --timeout 90'
+    healthCheckPath: /health/
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: localhost
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_SSLMODE
+        value: require
+      - key: STUDY_ORGANISER_TIME_ZONE
+        value: Asia/Kolkata
+

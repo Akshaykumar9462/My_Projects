@@ -1,0 +1,35 @@
+{% extends 'academics/base.html' %}
+
+{% block title %}Subjects | Study Organiser{% endblock %}
+
+{% block content %}
+<main class="form-page">
+    <section class="section-heading">
+        <div>
+            <p class="eyebrow">ORGANISE YOUR COURSES</p>
+            <h1>Subjects</h1>
+        </div>
+        <a class="button primary-button" href="{% url 'academics:subject-create' %}">Add subject</a>
+    </section>
+
+    {% if subjects %}
+    <div class="subject-list">
+        {% for subject in subjects %}
+        <article class="subject-row">
+            <div>
+                <h2>{{ subject.name }}</h2>
+                <p>{{ subject.tasks.count }} task{{ subject.tasks.count|pluralize }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2>No subjects yet</h2>
+        <p>Add a subject before creating an assignment, exam, or project.</p>
+        <a class="button primary-button" href="{% url 'academics:subject-create' %}">Add your first subject</a>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
+

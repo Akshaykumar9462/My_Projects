@@ -1,0 +1,29 @@
+{% extends 'academics/base.html' %}
+
+{% block title %}Create account | Study Organiser{% endblock %}
+
+{% block content %}
+<main class="form-page">
+    <p class="eyebrow">STUDY ORGANISER</p>
+    <h1>Create your account</h1>
+    <p class="intro-copy">Your study records will be saved under this account on this installation.</p>
+
+    <form method="post" class="data-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        <div class="form-field{% if field.errors %} has-error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text|safe }}</small>{% endif %}
+            {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="form-actions">
+            <button class="button primary-button" type="submit">Create account</button>
+            <a class="button secondary-button" href="{% url 'login' %}">Sign in instead</a>
+        </div>
+    </form>
+</main>
+{% endblock %}
+
