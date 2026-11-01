@@ -49,6 +49,18 @@ def health_check(request):
     return JsonResponse({"status": "ok"})
 
 
+def home(request):
+    """Show public information to visitors and the private dashboard to students."""
+    if request.user.is_authenticated:
+        return redirect("academics:dashboard")
+
+    return render(
+        request,
+        "academics/home.html",
+        {"canonical_url": request.build_absolute_uri("/")},
+    )
+
+
 @login_required
 def dashboard(request):
     """Show saved tasks and evidence-based, rule-generated progress insights."""

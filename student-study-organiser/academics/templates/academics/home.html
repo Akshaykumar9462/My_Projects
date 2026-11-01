@@ -1,0 +1,50 @@
+{% extends 'academics/base.html' %}
+
+{% block title %}Student Study Organiser | Plan assignments, exams and study progress{% endblock %}
+{% block meta_description %}<meta name="description" content="Organise subjects, assignments, exams and projects in one place. Track study progress and get helpful suggestions for your next steps.">{% endblock %}
+{% block robots %}<meta name="robots" content="index,follow">{% endblock %}
+{% block canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endblock %}
+
+{% block content %}
+<main class="landing-page">
+    <section class="landing-hero" aria-labelledby="landing-title">
+        <div>
+            <p class="eyebrow">STUDY ORGANISER</p>
+            <h1 id="landing-title">Make your study workload easier to manage.</h1>
+            <p class="intro-copy">Keep subjects, assignments, exams and projects together. Record study sessions, follow your progress and get suggestions for what to focus on next.</p>
+            <div class="landing-actions">
+                <a class="button primary-button" href="{% url 'signup' %}">Create your account</a>
+                <a class="button secondary-button" href="{% url 'login' %}">Sign in</a>
+            </div>
+        </div>
+        <aside class="landing-summary" aria-label="Study organiser features">
+            <p class="eyebrow">A clearer view of your studies</p>
+            <ul>
+                <li>Keep coursework and deadlines organised</li>
+                <li>See completed and pending work</li>
+                <li>Plan study time around your workload</li>
+            </ul>
+        </aside>
+    </section>
+
+    <section class="landing-features" aria-labelledby="features-title">
+        <p class="eyebrow">BUILT FOR STUDENTS</p>
+        <h2 id="features-title">Support for your study routine</h2>
+        <div class="landing-feature-grid">
+            <article class="landing-feature-card">
+                <h3>Organise academic tasks</h3>
+                <p>Track assignments, exams and projects by subject, deadline and priority.</p>
+            </article>
+            <article class="landing-feature-card">
+                <h3>Make a study plan</h3>
+                <p>Use your available study time to build a practical plan for upcoming work.</p>
+            </article>
+            <article class="landing-feature-card">
+                <h3>Review your progress</h3>
+                <p>Log study sessions, follow completed work and get suggestions based on your tasks.</p>
+            </article>
+        </div>
+    </section>
+</main>
+{% endblock %}
+

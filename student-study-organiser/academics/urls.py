@@ -9,7 +9,8 @@ app_name = "academics"
 
 urlpatterns = [
     path("health/", views.health_check, name="health"),
-    path("", views.dashboard, name="dashboard"),
+    path("", views.home, name="home"),
+    path("dashboard/", views.dashboard, name="dashboard"),
     path("subjects/", views.subject_list, name="subjects"),
     path("subjects/new/", views.subject_create, name="subject-create"),
     path("tasks/new/", views.task_create, name="task-create"),

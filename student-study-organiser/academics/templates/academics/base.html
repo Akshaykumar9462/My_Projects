@@ -5,12 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Study Organiser{% endblock %}</title>
+    {% block meta_description %}{% endblock %}
+    {% block robots %}<meta name="robots" content="noindex,follow">{% endblock %}
+    {% block canonical_url %}{% endblock %}
     <link rel="stylesheet" href="{% static 'academics/dashboard.css' %}">
 </head>
 <body>
     <div class="page-shell">
         <header class="topbar">
+            {% if user.is_authenticated %}
             <a class="brand" href="{% url 'academics:dashboard' %}" aria-label="Study Organiser home">
+            {% else %}
+            <a class="brand" href="{% url 'academics:home' %}" aria-label="Study Organiser home">
+            {% endif %}
                 <span class="brand-mark">S</span>
                 <span>Study Organiser</span>
             </a>

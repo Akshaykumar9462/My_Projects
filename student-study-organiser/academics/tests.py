@@ -28,6 +28,49 @@ from study_organiser.database import database_configuration
 from .services.progress import build_progress_summary
 
 
+class PublicDiscoveryTests(SimpleTestCase):
+    def test_homepage_is_public_and_search_indexable(self):
+        response = self.client.get(reverse("academics:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Organise academic tasks")
+        self.assertContains(response, '<meta name="robots" content="index,follow">', html=True)
+        self.assertContains(
+            response,
+            '<link rel="canonical" href="http://testserver/">',
+            html=True,
+        )
+
+    def test_sitemap_lists_only_the_public_homepage(self):
+        response = self.client.get(reverse("sitemap"))
+        sitemap = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response["Content-Type"].startswith("application/xml"))
+        self.assertIn("<loc>http://testserver/</loc>", sitemap)
+        self.assertNotIn("/dashboard/", sitemap)
+        self.assertNotIn("/study-plan/", sitemap)
+
+    def test_robots_file_points_to_sitemap(self):
+        response = self.client.get(reverse("robots"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("User-agent: *", response.content.decode())
+        self.assertIn("Allow: /", response.content.decode())
+        self.assertIn("Sitemap: http://testserver/sitemap.xml", response.content.decode())
+
+    def test_login_and_signup_pages_are_not_indexed(self):
+        for url_name in ("login", "signup"):
+            with self.subTest(url_name=url_name):
+                response = self.client.get(reverse(url_name))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(
+                    response,
+                    '<meta name="robots" content="noindex,follow">',
+                    html=True,
+                )
+
+
 class AcademicPageTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user("student-one", password="test-pass-123")
@@ -55,6 +98,17 @@ class AcademicPageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Calculus problem set")
+        self.assertContains(response, '<meta name="robots" content="noindex,follow">', html=True)
+
+    def test_authenticated_homepage_redirects_to_the_dashboard(self):
+        response = self.client.get(reverse("academics:home"))
+
+        self.assertRedirects(response, reverse("academics:dashboard"))
+
+    def test_authenticated_homepage_redirects_to_the_dashboard(self):
+        response = self.client.get(reverse("academics:home"))
+
+        self.assertRedirects(response, reverse("academics:dashboard"))
         self.assertEqual(response.context["total_count"], 1)
         self.assertEqual(response.context["pending_count"], 1)
         self.assertEqual(response.context["study_minutes_this_week"], 35)

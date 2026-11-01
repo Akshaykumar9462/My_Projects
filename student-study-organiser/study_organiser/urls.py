@@ -4,11 +4,14 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
+from academics.seo import robots_txt, sitemap_xml
 from academics.views import register
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("robots.txt", robots_txt, name="robots"),
+    path("sitemap.xml", sitemap_xml, name="sitemap"),
     path(
         "accounts/login/",
         auth_views.LoginView.as_view(template_name="registration/login.html"),
