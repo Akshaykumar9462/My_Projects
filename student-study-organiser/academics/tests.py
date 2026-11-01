@@ -71,6 +71,26 @@ class PublicDiscoveryTests(SimpleTestCase):
                 )
 
 
+class AuthenticationFormTests(SimpleTestCase):
+    def test_login_page_has_an_accessible_password_visibility_toggle(self):
+        response = self.client.get(reverse("login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-password-toggle')
+        self.assertContains(response, 'aria-controls="id_password"')
+        self.assertContains(response, 'src="/static/academics/auth.')
+
+    def test_signup_page_has_visibility_toggles_and_live_match_feedback(self):
+        response = self.client.get(reverse("signup"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-target="id_password1"')
+        self.assertContains(response, 'data-target="id_password2"')
+        self.assertContains(response, 'data-password-match')
+        self.assertContains(response, 'aria-live="polite"')
+        self.assertContains(response, 'src="/static/academics/auth.')
+
+
 class AcademicPageTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user("student-one", password="test-pass-123")
@@ -105,10 +125,12 @@ class AcademicPageTests(TestCase):
 
         self.assertRedirects(response, reverse("academics:dashboard"))
 
-    def test_authenticated_homepage_redirects_to_the_dashboard(self):
-        response = self.client.get(reverse("academics:home"))
+    def test_dashboard_shows_task_and_study_progress(self):
+        response = self.client.get(reverse("academics:dashboard"))
 
-        self.assertRedirects(response, reverse("academics:dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Calculus problem set")
+        self.assertContains(response, '<meta name="robots" content="noindex,follow">', html=True)
         self.assertEqual(response.context["total_count"], 1)
         self.assertEqual(response.context["pending_count"], 1)
         self.assertEqual(response.context["study_minutes_this_week"], 35)

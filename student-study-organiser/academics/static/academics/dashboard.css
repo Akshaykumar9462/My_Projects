@@ -123,6 +123,14 @@ h1 { margin-bottom: 7px; font-size: clamp(1.8rem, 4vw, 2.55rem); line-height: 1.
 .form-field .errorlist, .form-page .errorlist { margin: 0; padding-left: 18px; color: #a84040; font-size: 0.8rem; }
 .field-error { color: #a84040; font-size: 0.8rem; }
 .has-error input, .has-error select, .has-error textarea { border-color: #c65c5c; }
+.password-input-wrap { display: flex; align-items: stretch; gap: 8px; }
+.password-input-wrap input { min-width: 0; flex: 1; }
+.password-toggle { min-width: 64px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--white); color: var(--green-dark); font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+.password-toggle:hover { border-color: #b5c7bd; }
+.password-toggle:focus-visible { outline: 3px solid #cfe7dc; outline-offset: 2px; }
+.password-match { margin: 0; color: var(--muted); font-size: 0.78rem; }
+.password-match[data-state="match"] { color: var(--green-dark); }
+.password-match[data-state="mismatch"] { color: #a84040; }
 .form-actions { display: flex; align-items: center; gap: 10px; margin-top: 22px; }
 .landing-page { max-width: 1040px; margin: 42px auto 0; }
 .landing-hero { display: grid; grid-template-columns: 1.3fr 0.7fr; align-items: center; gap: 42px; padding: 20px 0 48px; }

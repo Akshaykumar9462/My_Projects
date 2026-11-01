@@ -14,9 +14,19 @@
         {% for field in form %}
         <div class="form-field{% if field.errors %} has-error{% endif %}">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% if field.name == 'password1' or field.name == 'password2' %}
+            <div class="password-input-wrap">
+                {{ field }}
+                <button class="password-toggle" type="button" data-password-toggle data-target="{{ field.id_for_label }}" data-label="{{ field.label|lower }}" aria-controls="{{ field.id_for_label }}" aria-pressed="false" aria-label="Show {{ field.label|lower }}">Show</button>
+            </div>
+            {% else %}
             {{ field }}
+            {% endif %}
             {% if field.help_text %}<small>{{ field.help_text|safe }}</small>{% endif %}
             {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            {% if field.name == 'password2' %}
+            <p class="password-match" id="password-match-status" role="status" aria-live="polite" data-password-match data-password-id="id_password1" data-confirm-id="{{ field.id_for_label }}" data-state="empty">Enter the confirmation password to check for a match.</p>
+            {% endif %}
         </div>
         {% endfor %}
         <div class="form-actions">
