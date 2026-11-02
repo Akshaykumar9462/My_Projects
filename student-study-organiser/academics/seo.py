@@ -24,3 +24,9 @@ def sitemap_xml(request):
     )
     return HttpResponse(content, content_type="application/xml")
 
+
+def google_site_verification(request):
+    """Serve the Search Console verification file at the website root."""
+    content = "google-site-verification: google8d934a08222077fa.html\n"
+    return HttpResponse(content, content_type="text/plain")
+
