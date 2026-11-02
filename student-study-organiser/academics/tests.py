@@ -59,6 +59,16 @@ class PublicDiscoveryTests(SimpleTestCase):
         self.assertIn("Allow: /", response.content.decode())
         self.assertIn("Sitemap: http://testserver/sitemap.xml", response.content.decode())
 
+    def test_google_search_console_verification_file_is_served_at_root(self):
+        response = self.client.get(reverse("google-site-verification"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response["Content-Type"].startswith("text/plain"))
+        self.assertEqual(
+            response.content.decode(),
+            "google-site-verification: google8d934a08222077fa.html\n",
+        )
+
     def test_login_and_signup_pages_are_not_indexed(self):
         for url_name in ("login", "signup"):
             with self.subTest(url_name=url_name):
